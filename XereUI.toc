@@ -1,0 +1,8 @@
+## Interface: 80000
+## Title: XereUI
+## Version: 0.1
+## Notes: Reusing Blizzard UI elements to create a lightweight and functional UI
+## Author: Xeredar
+## SavedVariablesPerCharacter: XereUICharDB
+
+core.lua
