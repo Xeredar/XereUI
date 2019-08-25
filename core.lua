@@ -213,51 +213,51 @@ function configureCUFProfiles()
 	if (XereUICharDB[2] == "normal") then
 		if (lowRes) then
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	50, 	144, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	50, 	144, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	100, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
 			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		else
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
 			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		end
 		
 	elseif (XereUICharDB[2] == "pvp") then
 		if (lowRes) then
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
 			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		else
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
 			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		end
 		
 	elseif (XereUICharDB[2] == "healer") then
 		if (lowRes) then
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	false);
 			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		else
 								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	true);
+			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	false);
 			configureCUFProfile(RAID_25_PROFILE, 	true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 			configureCUFProfile(RAID_40_PROFILE, 	true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	true);
+			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	false);
 			configureCUFProfile(BG_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
 		end
 		
