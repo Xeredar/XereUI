@@ -439,7 +439,7 @@ local function eventHandler(self, event, ...)
 		
 	-- switches the raidprofile whenever a group change occurs and is out of combat
 	elseif (event == "GROUP_ROSTER_UPDATE") or (event == "PLAYER_REGEN_ENABLED") then
-		switchProfile();
+--		switchProfile();
 		
 	-- Manages the Raid-Frames whenever the Player enters the world to ensure functionality
 	elseif (event == "COMPACT_UNIT_FRAME_PROFILES_LOADED") then
