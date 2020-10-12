@@ -7,11 +7,11 @@
 
 local defaultDB = {};
 -- Do nothing to this value! Ever! I mean it!
-defaultDB[1] = 0.7;
+defaultDB[1] = 1.0;
 -- Sets the default UI profile
 defaultDB[2] = "normal";
 -- Sets, whether raid profile repositioning/rescaling is enabled by default (doesn't affect automatic raid profile switching)
-defaultDB[3] = true;
+defaultDB[3] = false;
 -- Sets, whether nameplates should be small or big on fitting resolutions
 defaultDB[4] = true;
 
@@ -32,13 +32,16 @@ local lowRes = ((GetScreenWidth() < 1900) and (GetScreenHeight() < 1000));
 
 -- Sets the global CVars to the desired ones
 function setCVars()
-	SetCVar("useCompactPartyFrames", 1, "scriptCVar");
 	SetCVar("nameplateShowFriends", 0, "scriptCVar");
 	SetCVar("nameplateShowSelf", 0, "scriptCVar");
 	SetCVar("colorChatNamesByClass", 1, "scriptCVar");
 	SetCVar("ShowClassColorInNameplate", 1, "scriptCVar");
 	SetCVar("NamePlateVerticalScale", 2.7, "scriptCVar");
 	SetCVar("NamePlateHorizontalScale", 1.4, "scriptCVar");
+
+	if(XereUICharDB[3]) then
+		SetCVar("useCompactPartyFrames", 1, "scriptCVar");
+	end
 
 	if (((XereUICharDB[2] == "normal") or (XereUICharDB[2] == "healer")) and XereUICharDB[4]) then
 		SetCVar("NamePlateVerticalScale", 1, "scriptCVar");
@@ -443,9 +446,9 @@ local function eventHandler(self, event, ...)
 		
 	-- Manages the Raid-Frames whenever the Player enters the world to ensure functionality
 	elseif (event == "COMPACT_UNIT_FRAME_PROFILES_LOADED") then
-		manageCUFProfiles();
-		createMissingCUFProfiles();
 		if (XereUICharDB[3]) then
+			manageCUFProfiles();
+			createMissingCUFProfiles();
 			positionCUFPRofiles();
 			configureCUFProfiles();
 		end
