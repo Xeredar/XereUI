@@ -7,13 +7,11 @@
 
 local defaultDB = {};
 -- Do nothing to this value! Ever! I mean it!
-defaultDB[1] = 1.0;
+defaultDB[1] = 1.2;
 -- Sets the default UI profile
 defaultDB[2] = "normal";
--- Sets, whether raid profile repositioning/rescaling is enabled by default (doesn't affect automatic raid profile switching)
-defaultDB[3] = false;
 -- Sets, whether nameplates should be small or big on fitting resolutions
-defaultDB[4] = true;
+defaultDB[3] = true;
 
 -- Determines you current resolution to be lowRes or not
 -- Seperate "local global variable" so that multiple setups can use it
@@ -38,10 +36,6 @@ function setCVars()
 	SetCVar("ShowClassColorInNameplate", 1, "scriptCVar");
 	SetCVar("NamePlateVerticalScale", 2.7, "scriptCVar");
 	SetCVar("NamePlateHorizontalScale", 1.4, "scriptCVar");
-
-	if(XereUICharDB[3]) then
-		SetCVar("useCompactPartyFrames", 1, "scriptCVar");
-	end
 
 	if (((XereUICharDB[2] == "normal") or (XereUICharDB[2] == "healer")) and XereUICharDB[4]) then
 		SetCVar("NamePlateVerticalScale", 1, "scriptCVar");
@@ -114,6 +108,10 @@ end
 function positionFrames(scale, fScale, pX, pY, tX, tY, fX, fY)
 	MinimapCluster:SetScale(scale);
 	BuffFrame:SetScale(scale + 0.2);
+	for i = 1, 4 do
+		local frame = _G["PartyMemberFrame"..i]
+		frame:SetScale(scale + 0.4)
+	end
 	posFrame(PlayerFrame, scale, pX, pY);
 	posFrame(TargetFrame, scale, tX, tY);
 	posFrame(FocusFrame, fScale, fX, fY);
@@ -127,248 +125,6 @@ function posFrame(frameName, scale, x, y)
 	frameName:SetScale(scale);
 	frameName:SetUserPlaced(true);
 end
-
-
---[[
-
-	========== COMPACT RAIDFRAMES ==========
-
-]]
-
--- Sets the Displaynames for the different Raid-Profiles
--- Change the strings to your liking, but doesn't change their functionality
-local PARTY_PROFILE = "Party"
-local RAID_25_PROFILE = "Raid25";
-local RAID_40_PROFILE = "Raid40";
-local ARENA_PROFILE = "Arena";
-local BG_PROFILE = "Battleground";
-
--- Utility function to manage the raid profiles and create them in an addon friendly way
-function manageCUFProfiles()
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		if (name ~= ARENA_PROFILE) and (name ~= BG_PROFILE) and (name ~= PARTY_PROFILE) and (name ~= RAID_25_PROFILE) and (name ~= RAID_40_PROFILE) then
-			DeleteRaidProfile(name);
-			-- Replaces the deleted profile with a wanted one
-			if (not RaidProfileExists(PARTY_PROFILE)) then
-				name = PARTY_PROFILE;
-			elseif (not RaidProfileExists(RAID_25_PROFILE)) then
-				name = RAID_25_PROFILE;
-			elseif (not RaidProfileExists(RAID_40_PROFILE)) then
-				name = RAID_40_PROFILE;
-			elseif (not RaidProfileExists(ARENA_PROFILE)) then
-				name = ARENA_PROFILE;
-			elseif (not RaidProfileExists(BG_PROFILE)) then
-				name = BG_PROFILE;
-			end
-			CompactUnitFrameProfiles_CreateProfile(name);
-			-- Calls the function again to rescan the profiles
-			-- (Lua doesn't allow the count variable to be changed from inside the loop)
-			manageCUFProfiles();
-		end
-	end
-end
-
--- Utility function to create all the missing profiles
--- Extra function to prevent recursive overload
-function createMissingCUFProfiles() 
-	if (not RaidProfileExists(PARTY_PROFILE)) then
-		CompactUnitFrameProfiles_CreateProfile(PARTY_PROFILE);
-	end
-	if (not RaidProfileExists(RAID_25_PROFILE)) then
-		CompactUnitFrameProfiles_CreateProfile(RAID_25_PROFILE);
-	end
-	if (not RaidProfileExists(RAID_40_PROFILE)) then
-		CompactUnitFrameProfiles_CreateProfile(RAID_40_PROFILE);
-	end
-	if (not RaidProfileExists(ARENA_PROFILE)) then
-		CompactUnitFrameProfiles_CreateProfile(ARENA_PROFILE);
-	end
-	if (not RaidProfileExists(BG_PROFILE)) then
-		CompactUnitFrameProfiles_CreateProfile(BG_PROFILE);
-	end
-end
-
--- Configures a single CUFProfile according to the parsed paraameters
-function configureCUFProfile(profile, together, sorting, horizontal, powerbar, pets, tanks, dispell, health, height, width, border)
-	local oldProfile = GetActiveRaidProfile();
-	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
-	SetRaidProfileOption(profile, "keepGroupsTogether", together);
-	SetRaidProfileOption(profile, "sortBy", sorting); -- { "role", "group", "alphabetical" }
-	SetRaidProfileOption(profile, "horizontalGroups", horizontal);
-	SetRaidProfileOption(profile, "displayHealPrediction", true);
-	SetRaidProfileOption(profile, "displayPowerBar", powerbar);
-	SetRaidProfileOption(profile, "displayAggroHighlight", true);
-	SetRaidProfileOption(profile, "useClassColors", true);
-	SetRaidProfileOption(profile, "displayPets", pets);
-	SetRaidProfileOption(profile, "displayMainTankAndAssist", tanks);
-	SetRaidProfileOption(profile, "displayNonBossDebuffs", true);
-	SetRaidProfileOption(profile, "displayOnlyDispellableDebuffs", dispell);
-	SetRaidProfileOption(profile, "healthText", health); -- { "none", "health", "losthealth", "perc" }
-	SetRaidProfileOption(profile, "frameHeight", height);
-	SetRaidProfileOption(profile, "frameWidth", width);
-	SetRaidProfileOption(profile, "displayBorder", border);
-	CompactUnitFrameProfiles_ActivateRaidProfile(oldProfile);
-end
-
--- Configures the settings of the CUFProfiles depending on the UIProfile
-function configureCUFProfiles()
-	if (XereUICharDB[2] == "normal") then
-		if (lowRes) then
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	50, 	144, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	100, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
-			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		else
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
-			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		end
-		
-	elseif (XereUICharDB[2] == "pvp") then
-		if (lowRes) then
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
-			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		else
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		false, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	50, 	100, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		false, 	"role", 	false, 	true, 	true, 	false, 	false, 	"perc", 	72, 	144, 	false);
-			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		end
-		
-	elseif (XereUICharDB[2] == "healer") then
-		if (lowRes) then
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	false);
-			configureCUFProfile(BG_PROFILE, 		false, 	"group", 	false, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		else
-								-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
-			configureCUFProfile(PARTY_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	false, 	false, 	"perc", 	72, 	72, 	false);
-			configureCUFProfile(RAID_25_PROFILE, 	true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(RAID_40_PROFILE, 	true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-			configureCUFProfile(ARENA_PROFILE, 		true, 	"group", 	true, 	false, 	true, 	false, 	false, 	"perc", 	72, 	72, 	false);
-			configureCUFProfile(BG_PROFILE, 		true, 	"group", 	true, 	false, 	false, 	true, 	false, 	"none", 	36, 	72, 	false);
-		end
-		
-	else
-		print("Chosen profile not recognized.");
-	end
-end
-
--- Positions the compact unit frames according to resolution and profile
-function positionCUFPRofiles()
-	if (XereUICharDB[2] == "normal") then
-		if (lowRes) then
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 130, "BOTTOM", 150, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "TOP", 130, "BOTTOM", 150, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-		else
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 180, "BOTTOM", 400, "LEFT", 350);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "TOP", 200, "BOTTOM", 300, "LEFT", 200);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP", 200, "BOTTOM", 300, "LEFT", 150);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "TOP", 200, "BOTTOM", 400, "LEFT", 250);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP", 200, "BOTTOM", 300, "LEFT", 150);
-		end
-		
-	elseif (XereUICharDB[2] == "pvp") then
-		if (lowRes) then
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 130, "BOTTOM", 150, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "TOP", 130, "BOTTOM", 150, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-		else
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 200, "BOTTOM", 400, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "TOP", 200, "BOTTOM", 300, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP", 200, "BOTTOM", 300, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "TOP", 200, "BOTTOM", 400, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP", 200, "BOTTOM", 300, "ATTACHED", 0);
-		end
-		
-	elseif (XereUICharDB[2] == "healer") then
-		if (lowRes) then
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "BOTTOM", 275, "BOTTOM", 100, "LEFT", 500);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "BOTTOM", 275, "BOTTOM", 100, "LEFT", 500);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP", 130, "BOTTOM", 250, "ATTACHED", 0);
-		else
-			SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "BOTTOM", 425, "BOTTOM", 100, "LEFT", 775);
-			SetRaidProfileSavedPosition(RAID_25_PROFILE, 	false, "BOTTOM", 425, "BOTTOM", 100, "LEFT", 775);
-			SetRaidProfileSavedPosition(RAID_40_PROFILE, 	false, "TOP",  200, "BOTTOM", 100, "LEFT", 150);
-			SetRaidProfileSavedPosition(ARENA_PROFILE, 		false, "BOTTOM", 425, "BOTTOM", 100, "LEFT", 775);
-			SetRaidProfileSavedPosition(BG_PROFILE, 		false, "TOP",  200, "BOTTOM", 100, "LEFT", 150);
-		end
-		
-	else
-		print("Chosen profile not recognized.");
-	end
-end
-
--- Credit to Grimmj from the WoW-EU-Forums
--- Handles the CompactRaidFrame switching
-function switchProfile()
-	if InCombatLockdown() == false then --This should fix in-combat issues.
-		isArena, _ = IsActiveBattlefieldArena(); 
-		if isArena == true then --**IN ARENA**.
-			if GetActiveRaidProfile() ~= ARENA_PROFILE then --if arena profile is not active
-				CompactUnitFrameProfiles_ActivateRaidProfile(ARENA_PROFILE); --...set arena profile.
-			end
-			
-		elseif InActiveBattlefield() then --**IN BG**.
-			if GetActiveRaidProfile() ~= BG_PROFILE then --if battleground profile is not active
-				CompactUnitFrameProfiles_ActivateRaidProfile(BG_PROFILE); --...set battleground profile.
-			end
-			
-		elseif GetNumGroupMembers(LE_PARTY_CATEGORY_INSTANCE) > 0 then --**IN INSTANCE GROUP**
-			if GetNumGroupMembers(LE_PARTY_CATEGORY_INSTANCE) > 25 then
-				if GetActiveRaidProfile() ~= RAID_40_PROFILE then -- if Raid40 profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(RAID_40_PROFILE); --...set raid40 profile.
-				end
-			elseif GetNumGroupMembers(LE_PARTY_CATEGORY_INSTANCE) > 5 then
-				if GetActiveRaidProfile() ~= RAID_25_PROFILE then --if Raid25 profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(RAID_25_PROFILE); --...set raid25 profile.
-				end
-			else
-				if GetActiveRaidProfile() ~= PARTY_PROFILE then --if Party profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(PARTY_PROFILE); --...set Party profile.
-				end
-			end
-			
-		elseif GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) > 0 then --**IN MANUAL GROUP**
-			if GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) > 25 then
-				if GetActiveRaidProfile() ~= RAID_40_PROFILE then -- if Raid40 profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(RAID_40_PROFILE); --...set raid40 profile.
-				end
-			elseif GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) > 5 then
-				if GetActiveRaidProfile() ~= RAID_25_PROFILE then --if Raid25 profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(RAID_25_PROFILE); --...set raid25 profile.
-				end
-			else
-				if GetActiveRaidProfile() ~= PARTY_PROFILE then --if Party profile is not active
-					CompactUnitFrameProfiles_ActivateRaidProfile(PARTY_PROFILE); --...set Party profile.
-				end
-			end
-		end
-	end
-end
-
 
 --[[
 
@@ -408,9 +164,6 @@ end);
 local frame = CreateFrame("FRAME", "XereUIFrame");
 frame:RegisterEvent("ADDON_LOADED");
 frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-frame:RegisterEvent("GROUP_ROSTER_UPDATE"); --fires when player joins or leaves group
-frame:RegisterEvent("PLAYER_REGEN_ENABLED"); --fires when leaving combat
-frame:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED"); --fires when the CUF is loaded. Happens apparently after entering world and is needed to prevent errors
 frame:RegisterEvent("CVAR_UPDATE"); -- needed so that CVars can be set in a script
 
 local function eventHandler(self, event, ...)
@@ -439,19 +192,6 @@ local function eventHandler(self, event, ...)
 		-- Applies the profile to the interface whenever the player enters the world
 		setPositions();
 		setCVars();
-		
-	-- switches the raidprofile whenever a group change occurs and is out of combat
-	elseif (event == "GROUP_ROSTER_UPDATE") or (event == "PLAYER_REGEN_ENABLED") then
---		switchProfile();
-		
-	-- Manages the Raid-Frames whenever the Player enters the world to ensure functionality
-	elseif (event == "COMPACT_UNIT_FRAME_PROFILES_LOADED") then
-		if (XereUICharDB[3]) then
-			manageCUFProfiles();
-			createMissingCUFProfiles();
-			positionCUFPRofiles();
-			configureCUFProfiles();
-		end
 	end
 end
 
@@ -471,15 +211,10 @@ local function MyAddonCommands(command, editbox)
 		XereUICharDB[2] = command;
 		setCVars();
 		ReloadUI();
-		
-	-- toggles the raid profile positioning	
-	elseif (command == "rprofile") then
-		XereUICharDB[3] = not XereUICharDB[3];
-		ReloadUI();
 
 	-- toggles the nameplate size
 	elseif (command == "nameplate") then
-		XereUICharDB[4] = not XereUICharDB[4];
+		XereUICharDB[3] = not XereUICharDB[3];
 		ReloadUI();
 		
 	-- prints a list of the savedvariables and their values
@@ -487,15 +222,8 @@ local function MyAddonCommands(command, editbox)
 	
 		print("Version: " .. XereUICharDB[1]);
 		print("Profile: " .. XereUICharDB[2]);
-		
-		-- Apparently, lua cannot concatenate booleans to strings ...		
-		if (XereUICharDB[3]) then
-			print("Raid-Profile positioning: true");
-		else
-			print("Raid-Profile positioning: false");
-		end
 
-		if (XereUICharDB[4]) then
+		if (XereUICharDB[3]) then
 			print("Nameplate autosize: true");
 		else
 			print("Nameplate autosize: false");
@@ -514,7 +242,6 @@ local function MyAddonCommands(command, editbox)
 		print("    > |cff34d1c9pvp|r : for the pvp focused UI.");
 		print("    > |cff34d1c9healer|r : for a healing centric UI.");
 		print(" ");
-		print("    > |cff34d1c9rprofile|r : toggles the raid profile positioning.");
 		print("    > |cff34d1c9nameplate|r : toggles small/big nameplates for fitting resolutions.");
 		print(" ");
 		print("    > |cff34d1c9help|r : prints this help.");
