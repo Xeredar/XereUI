@@ -147,38 +147,12 @@ frame:SetScript("OnEvent", eventHandler);
 local function MyAddonCommands(command, editbox)
 	-- Changes the profile to the specified one
 	if (command == "status") or (command == "help") then
-		print("Version: " .. version);
+		print("|cff9482C9XereUI|r version |cff34d1c9" .. version .. "|r.");
 	else
-		print("Command not recognized. Try '/xui help' for help.");
+		print("Command not recognized. Try |cff34d1c9'/xui help'|r for help.");
 	end
 end
 
 SLASH_XEREUI1, SLASH_XEREUI2 = '/xui', '/xereui';
 
 SlashCmdList["XEREUI"] = MyAddonCommands;
-
-
---[[
-
-	========== UTILITY FUNCTIONS ==========
-
-]]
-
-function tablelength(table)
-	local count = 0;
-	for _ in pairs(table) do 
-		count = count + 1;
-	end
-	return count;
-end
-
-
---[[
-
-	========== TEST CODE ==========
-	and also notes ...
-
-	UI Name color: 9482C9
-	Hint color: 34d1c9
-
-]]
