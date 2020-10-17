@@ -1,8 +1,7 @@
 ## Interface: 90001
 ## Title: XereUI
-## Version: 0.2
+## Version: 1.0
 ## Notes: Reusing Blizzard UI elements to create a lightweight and functional UI
 ## Author: Xeredar
-## SavedVariablesPerCharacter: XereUICharDB
 
 core.lua
