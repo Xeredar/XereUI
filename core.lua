@@ -113,7 +113,7 @@ end);
 
 -- Moves the tooltip to be anchored at the cursos
 
-hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent) self:SetOwner(parent, "ANCHOR_CURSOR") end)
+-- hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent) self:SetOwner(parent, "ANCHOR_CURSOR") end)
 
 
 --[[
