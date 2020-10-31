@@ -25,7 +25,7 @@ local lowRes = ((GetScreenWidth() < 1900) and (GetScreenHeight() < 1000));
 -- Sets the global CVars to the desired ones
 function setCVars()
 	SetCVar("nameplateShowFriends", 0, "scriptCVar");
-	SetCVar("nameplateShowSelf", 0, "scriptCVar");
+	SetCVar("nameplateShowSelf", 1, "scriptCVar");
 	SetCVar("colorChatNamesByClass", 1, "scriptCVar");
 	SetCVar("ShowClassColorInNameplate", 1, "scriptCVar");
 end
