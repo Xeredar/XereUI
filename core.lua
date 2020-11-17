@@ -41,11 +41,8 @@ end
 function setPositions ()
 	TARGET_FRAME_BUFFS_ON_TOP = true;
 	FOCUS_FRAME_BUFFS_ON_TOP = true;
-	if not lowRes then
-		PLAYER_FRAME_CASTBARS_SHOWN = false;
-	else
-		PLAYER_FRAME_CASTBARS_SHOWN = true;
-	end
+	PLAYER_FRAME_CASTBARS_SHOWN = lowRes;
+	
 	local scale, playerX, playerY;
 
 	if (lowRes) then
@@ -84,6 +81,67 @@ function posFrame(frameName, scale, x, y)
 end
 
 --[[
+	========== COMPACT RAIDFRAMES ==========
+]]
+
+-- Sets the Displaynames for the different Raid-Profiles
+-- Change the strings to your liking, but doesn't change their functionality
+local PARTY_PROFILE = "Party";
+
+-- Creates a raid profile used for the addon if not already present
+function createProfileIfMissing()
+	if not RaidProfileExists(PARTY_PROFILE) then
+		if GetNumRaidProfiles() < 5 then
+			CompactUnitFrameProfiles_CreateProfile(PARTY_PROFILE);
+		else
+			print("|cff9482C9XereUI|r | Error: Could not create necessary raiframe profile. All raidframe profiles are in use. Please free up a slot and type /reload.");
+		end
+	end
+end
+
+-- Configures a single CUFProfile according to the parsed parameters
+function configureCUFProfile(profile, together, sorting, horizontal, powerbar, pets, tanks, dispell, health, height, width, border)
+	local oldProfile = GetActiveRaidProfile();
+	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+	SetRaidProfileOption(profile, "keepGroupsTogether", together);
+	SetRaidProfileOption(profile, "sortBy", sorting); -- { "role", "group", "alphabetical" }
+	SetRaidProfileOption(profile, "horizontalGroups", horizontal);
+	SetRaidProfileOption(profile, "displayHealPrediction", true);
+	SetRaidProfileOption(profile, "displayPowerBar", powerbar);
+	SetRaidProfileOption(profile, "displayAggroHighlight", true);
+	SetRaidProfileOption(profile, "useClassColors", true);
+	SetRaidProfileOption(profile, "displayPets", pets);
+	SetRaidProfileOption(profile, "displayMainTankAndAssist", tanks);
+	SetRaidProfileOption(profile, "displayNonBossDebuffs", true);
+	SetRaidProfileOption(profile, "displayOnlyDispellableDebuffs", dispell);
+	SetRaidProfileOption(profile, "healthText", health); -- { "none", "health", "losthealth", "perc" }
+	SetRaidProfileOption(profile, "frameHeight", height);
+	SetRaidProfileOption(profile, "frameWidth", width);
+	SetRaidProfileOption(profile, "displayBorder", border);
+	CompactUnitFrameProfiles_ActivateRaidProfile(oldProfile);
+end
+
+-- Configures the settings of the CUFProfiles depending on the UIProfile
+function configureCUFProfiles()
+	if (lowRes) then
+							-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
+		configureCUFProfile(PARTY_PROFILE, 		true, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	50, 	144, 	false);
+	else
+							-- profile, 	 together, sorting, horizontal, powerbar, pets, tanks, dispell, health, 	height, width, border
+		configureCUFProfile(PARTY_PROFILE, 		true, 	"role", 	false, 	true, 	false, 	false, 	true, 	"none", 	72, 	144, 	false);
+	end
+end
+
+-- Positions the compact unit frames according to resolution and profile
+function positionCUFPRofiles()
+	if (lowRes) then
+		SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 130, "BOTTOM", 150, "ATTACHED", 0);
+	else
+		SetRaidProfileSavedPosition(PARTY_PROFILE, 		false, "TOP", 180, "BOTTOM", 400, "LEFT", 250);
+	end
+end
+
+--[[
 
 	========== MISCELANIOUS ==========
 
@@ -113,7 +171,7 @@ end);
 
 -- Moves the tooltip to be anchored at the cursos
 
-hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent) self:SetOwner(parent, "ANCHOR_CURSOR") end)
+-- hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent) self:SetOwner(parent, "ANCHOR_CURSOR") end)
 
 
 --[[
@@ -125,6 +183,7 @@ hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent) self:SetOw
 local frame = CreateFrame("FRAME", "XereUIFrame");
 frame:RegisterEvent("ADDON_LOADED");
 frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+frame:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED"); --fires when the CUF is loaded. Happens apparently after entering world and is needed to prevent errors
 frame:RegisterEvent("CVAR_UPDATE"); -- needed so that CVars can be set in a script
 
 local function eventHandler(self, event, ...)
@@ -132,6 +191,11 @@ local function eventHandler(self, event, ...)
 		-- Applies the profile to the interface whenever the player enters the world
 		setPositions();
 		setCVars();
+
+	elseif (event == "COMPACT_UNIT_FRAME_PROFILES_LOADED") then
+		createProfileIfMissing();
+		positionCUFPRofiles();
+		configureCUFProfiles();
 	end
 end
 
